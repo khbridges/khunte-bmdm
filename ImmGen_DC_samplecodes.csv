@@ -1,0 +1,33 @@
+﻿sample_code,simplified
+DC.103n11bpsiglecFn.Lu,Lung CD11b+CD24+ DCs
+DC.103p11bnsiglecFn.Lu,Lung CD103+ DCs
+DC.24p8anXCR1n.Sp,Spleen CD8-XCR1- DCs
+DC.24p8anXCR1p.Sp,Spleen CD8-XCR1+ DCs
+DC.24p8apXCR1n.Sp,Spleen CD8+XCR1- DCs
+DC.24p8apXCR1p.Sp,Spleen CD8+XCR1+ DCs
+DC.8an103n.MLN,Lymph node CD8-CD103- DCs
+DC.8an103n.PP,Lymph node CD8-CD103- DCs
+DC.8an103n11bn.MLN,Lymph node CD8-CD103- DCs
+DC.8an103n11bn.PP,Lymph node CD8-CD103- DCs
+DC.8an103p.MLN,Lymph node CD8-CD103+ DCs
+DC.8an103p.PP,Lymph node CD8-CD103+ DCs
+DC.8ap.MLN,Lymph node CD8+ DCs
+DC.8ap.PP,Lymph node CD8+ DCs
+DC.8p4n.Sp,Spleen CD8+CD4- DCs
+DC.SigHn.64n11chipBst2n11bp8anRFPn.Sp,Spleen CD8- DCs
+DC.SigHn.64n11chipBst2n11bp8anRFPp.Sp,Spleen CD8- DCs
+DC.XCR1nSIRPap.Th,Thymus XCR1-SIRPa+ DCs
+DC.XCR1pSIRPan.Th,Thymus XCR1+SIRPa- DCs
+DC.cDC1.XCR1p.Lv,Liver CD103+ cDC1s
+DC.cDC2.172ap.Lv,Liver CD11b+ cDC2s
+DC.mig.103p.LuLN,Lymph node CD103+CD11b- DCs
+DC.mig.11bp.LuLN,Lymph node CD103-CD11b+ DCs
+DC.pDC.120g8p11cintp6Cp.Lv,Liver preDCs
+DC.pDC.DN.BM,Bone marrow SiglecH-Ly6C- preDC
+DC.pDC.DN.Sp,Spleen SiglecH-Ly6C- preDC
+DC.pDC.DP.BM,Bone marrow SiglecH+Ly6C+ preDC
+DC.pDC.SigHn6Cp.BM,Bone marrow SiglecH-Ly6C+ preDC
+DC.pDC.SigHn6Cp.Sp,Spleen SiglecH-Ly6C+ preDC
+DC.pDC.SigHp6Cn.BM,Bone marrow SiglecH+Ly6C- preDC
+DC.res.11bp.LuLN,Lymph node CD8-CD11b+ DCs
+DC.res.8p.LuLN,Lymph node CD8+CD11b- DCs
