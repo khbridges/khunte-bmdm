@@ -205,9 +205,10 @@ print(X2.sum(axis=1).A1.mean())
 
 # no metadata on gene ids (e.g. 'protein coding') causing save error
 # del adata.var['gene_ids-M1+M2']
-del adata.var['gene_ids-M0']
-del adata.var['gene_ids-M1']
-del adata.var['gene_ids-M2']
+# del adata.var['gene_ids-M0']
+# del adata.var['gene_ids-M1']
+# del adata.var['gene_ids-M2']
+del adata.var['gene_ids']
 
 # Write results to file
 adata.write(results_path + results_file)

@@ -25,6 +25,9 @@ sc.tl.umap(bmdm_fig3)  # default initial position
 sc.pl.umap(bmdm_fig3, color='sample')
 sc.tl.leiden(bmdm_fig3, resolution=0.2)
 
+# reading from backup
+bmdm_fig3 = sc.read('/Users/katebridges/Downloads/bmdm_object_20220509.h5ad')
+
 # get DEGs for cluster of all data
 sc.tl.rank_genes_groups(bmdm_fig3, 'leiden', method='wilcoxon', key_added='leiden_clust')
 
@@ -169,3 +172,15 @@ network_colors = pd.Series(ucg_labels).map(network_lut)
 ig = sns.clustermap(np.log(dc[ig_ind]+1), yticklabels=dc.index, cmap='viridis_r', linecolor='black', rasterized=False,
                     col_cluster=True, row_cluster=True, xticklabels=ig_ind, col_colors=network_colors.values)
 ig.savefig('immgen_dc.png')
+
+
+# ENRICHMENT for DC subsets
+dc_geneset = {'mregDC': ['Cd80', 'Cd40', 'Cd83', 'Cd86', 'Relb', 'Cd274', 'Pdcd1lg2', 'Cd200', 'Fas', 'Socs1',
+                         'Socs2', 'Aldh1a2', 'Ccr7', 'Fscn1', 'Il4ra', 'Il4i1', 'Myo1g', 'Cxcl16', 'Adam8', 'Icam1',
+                         'Marcks', 'Marcksl1'],
+              'DC1': ['Xcr1', 'Clec9a', 'Cadm1', 'Naaa'],
+              'DC2': ['Itgam', 'Cd209a', 'Sirpa', 'H2-DMb2']}
+
+sc.tl.score_genes(bmdm_fig3, dc_geneset['mregDC'], score_name='mregDC_score')
+sc.tl.score_genes(bmdm_fig3, dc_geneset['DC1'], score_name='DC1_score')
+sc.tl.score_genes(bmdm_fig3, dc_geneset['DC2'], score_name='DC2_score')

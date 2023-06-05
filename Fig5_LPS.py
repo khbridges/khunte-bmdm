@@ -28,6 +28,62 @@ sc.tl.umap(bmdm_fig3)  # default initial position
 sc.pl.umap(bmdm_fig3, color='sample')
 sc.tl.leiden(bmdm_fig3, resolution=0.2)
 
+# from backup
+bmdm_fig3 = sc.read('/Users/katebridges/Downloads/bmdm_object_20220509.h5ad')
+bmdm_fig3.obs['sample_cluster'] = [bmdm_fig3.obs['sample'][j] + ' ' + bmdm_fig3.obs['leiden'][j] for j in np.arange(bmdm_fig3.shape[0])]
+
+clust2cond_map = {'M0 0': 'BMDM Ctrl',
+                  'M0 1': 'BMDM Ctrl',
+                  'M0 4': 'BMDM Ctrl',
+                  'M0 5': 'BMDC Ctrl',
+                  'M1 1': 'BMDM+LPS/IFNg',
+                  'M1 2': 'BMDM+LPS/IFNg',
+                  'M1 3': 'BMDM+LPS/IFNg',
+                  'M1 5': 'BMDC+LPS/IFNg',
+                  'M2 0': 'BMDM+IL4',
+                  'M2 1': 'BMDM+IL4',
+                  'M2 2': 'BMDM+IL4',
+                  'M2 4': 'BMDM+IL4',
+                  'M2 5': 'BMDC+IL4'}
+
+bmdm_fig3.obs['sample_cat'] = bmdm_fig3.obs['sample_cluster'].map(clust2cond_map)
+
+
+def plot_genes_bootstrap(adata, cc_geneset, cat_order, meta_slot, bar_colors, y_max):
+    for gene_name in cc_geneset:
+        dat = np.array(adata[:, gene_name].X.todense()).flatten()
+        dat_stat = np.zeros((len(np.unique(adata.obs[meta_slot])), 3))
+        dat_stat2 = np.zeros((len(np.unique(adata.obs[meta_slot])), 3))
+        b = 0
+
+        for g in cat_order:
+            i = np.where(adata.obs[meta_slot] == g)[0]
+            ci_info = bs.bootstrap(dat[i], stat_func=bs_stats.mean)
+            dat_stat[b, 0] = ci_info.value
+            dat_stat2[b, 0] = ci_info.value
+            dat_stat[b, 1] = dat_stat[b, 0] - ci_info.lower_bound
+            dat_stat2[b, 1] = ci_info.lower_bound
+            dat_stat[b, 2] = ci_info.upper_bound - dat_stat[b, 0]
+            dat_stat2[b, 2] = ci_info.upper_bound
+            b = b + 1
+
+        # plotting results as bar graphs
+        fig, ax = plt.subplots(figsize=(3, 4.25))
+        bar_ind = cat_order
+        barlist = ax.bar(bar_ind, dat_stat[:, 0], yerr=[dat_stat[:, 1], dat_stat[:, 2]], align='center', ecolor='black',
+                         capsize=10, color=bar_colors)
+        plt.title(gene_name)
+        ax.set_ylabel('ln[mRNA counts + 1]')
+        ax.set_xticks(np.arange(len(bar_ind)))
+        ax.set_xticklabels(bar_ind, rotation=75)
+        plt.ylim([0, y_max])
+        plt.tight_layout()
+
+        return dat_stat2
+
+
+plot_genes_bootstrap(bmdm_fig3, ['Ccl17', 'Ccl22', 'Cxcl9', 'Cxcl10'], np.unique(bmdm_fig3.obs['sample_cat']), 'sample_cat', sns.husl_palette(6), 7)
+
 # inspecting expression of GENES OF INTEREST
 kmj_genes = ['Il12b', 'Il6', 'Tnf', 'Ccl5', 'H2-Eb1', 'H2-Aa', 'H2-Ab1', 'Ccr7', 'Flt3', 'Ccl22', 'Ccl17', 'Socs2']
 for j in kmj_genes:
