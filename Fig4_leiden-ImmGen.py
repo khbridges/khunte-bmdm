@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import seaborn as sns
+import scvelo as scv
+import loompy
 
 # figure params
 sc.set_figure_params(figsize=(4, 4), fontsize=15)
@@ -28,6 +30,31 @@ sc.tl.leiden(bmdm_fig3, resolution=0.2)
 # reading from backup
 bmdm_fig3 = sc.read('/Users/katebridges/Downloads/bmdm_object_20220509.h5ad')
 
+loom_dir = '/Users/katebridges/Downloads/AMR-LOOM/'
+m1_ldata = scv.read(loom_dir + 'M1-H_MMT.loom', cache=False)
+loompy.combine([loom_dir + 'M0-H_MMT.loom', loom_dir + 'M1-H_MMT.loom', loom_dir + 'M2-H_MMT.loom'],
+               output_file=loom_dir + 'merged-BMDM.loom')
+merged_ldata = scv.read(loom_dir + 'merged-BMDM.loom', cache=False)
+
+# integrating with loom files for RNA velo
+bmdm_fig3 = scv.utils.merge(bmdm_fig3, merged_ldata)
+
+# running basic RNA velocity analyses
+scv.pl.proportions(bmdm_fig3, groupby='sample')
+scv.tl.velocity(bmdm_fig3)
+scv.tl.velocity_graph(bmdm_fig3)
+scv.pl.velocity_embedding_stream(bmdm_fig3, basis='umap', color='leiden')
+
+# PAGA for reiteration of cross-condition cluster similarity for clust 5?
+bmdm_fig3.obs['sample_leiden'] = [bmdm_fig3.obs['sample'][h] + ' ' + bmdm_fig3.obs['leiden'][h] for h in bmdm_fig3.obs_names]
+# bmdm_fig3_plotting obj - remove 'sample_leiden' categories with 1 cell
+sc.tl.paga(bmdm_fig3, groups='sample_leiden', use_rna_velocity=False)
+
+paga_palette = {'M0 0': sns.husl_palette(6)[0], 'M0 1': sns.husl_palette(6)[1], 'M0 4': sns.husl_palette(6)[4], 'M0 5': sns.husl_palette(6)[5], 'M1 2': sns.husl_palette(6)[2], 'M1 3': sns.husl_palette(6)[3], 'M1 5': sns.husl_palette(6)[5], 'M2 0': sns.husl_palette(6)[0], 'M2 1': sns.husl_palette(6)[1],  'M2 4': sns.husl_palette(6)[4], 'M2 5': sns.husl_palette(6)[5]}
+bmdm_fig3_plotting.uns['sample_leiden_colors'] = list(paga_palette.values())
+sc.tl.paga(bmdm_fig3_plotting, groups='sample_leiden', use_rna_velocity=False)
+sc.pl.paga(bmdm_fig3_plotting, threshold=0.1, node_size_scale=5, node_size_power=0.4)
+
 # get DEGs for cluster of all data
 sc.tl.rank_genes_groups(bmdm_fig3, 'leiden', method='wilcoxon', key_added='leiden_clust')
 
@@ -53,7 +80,7 @@ clust5.to_excel(writer, sheet_name='Cluster5')
 writer.save()
 
 # UMAP VIZ by leiden cluster
-leiden_dict = {np.unique(bmdm_fig3.obs['leiden'])[m]: sns.husl_palette(5)[m] for m in np.arange(len(np.unique(bmdm_fig3.obs['leiden'])))}
+leiden_dict = {np.unique(bmdm_fig3.obs['leiden'])[m]: sns.husl_palette(6)[m] for m in np.arange(len(np.unique(bmdm_fig3.obs['leiden'])))}
 sc.pl.umap(bmdm_fig3, color='leiden', palette=leiden_dict)
 
 # HEATMAP for leiden clusters x mac/DC signature genes (sig genes from Helft et al.)
